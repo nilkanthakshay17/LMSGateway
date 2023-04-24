@@ -1,0 +1,59 @@
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8010/eureka
+  instance:
+    prefer-ip-address: true
+server:
+  port: 8011
+spring:
+  application:
+    name: lmsgateway
+  cloud:
+    gateway:
+      globalcors:
+       corsConfigurations:
+        '[http://localhost:3000]':
+         allowedOrigins: "*"
+         allowedHeaders: "*" 
+         allowedMethods:
+          - GET
+          - POST
+          
+      routes: 
+      - id: lmsdashboard
+        uri: lb://lmsdashboard
+        predicates:
+         - Path=/api/v1.0/**
+        filters:
+         - AuthFilter
+          
+      - id: lmscourses
+        uri: lb://lmscourses
+        predicates:
+         - Path=/course/**
+        filters:
+         - AuthFilter
+         
+      - id: lmsusers
+        uri: lb://lmsusers
+        predicates:
+         - Path=/user/**
+        filters:
+         - AuthFilter
+    
+      - id: lmsauth
+        uri: lb://lmsauth
+        predicates:
+        - Path=/auth/**
+     
+      
+  
+  config:
+    import: optional:configserver:http://localhost:9095
+      
+token:
+  secret: shadyaxeeshadyaxeeshadyaxeeshadyaxeeshadyaxee
+
